@@ -85,11 +85,14 @@ def generate(
 ):
     os.system(f'python gen_t2m.py --gpu_id 0 --seed {seed} --ext {uid} --repeat_times {repeat_times} --motion_length {motion_length} --text_prompt "{text}"')
     datas = []
+    file_name = [name for name in os.listdir(f"./generation/{uid}/animations/0/") if name.endswith('_ik.mp4')][0]
+    motion_length = int(file_name.split('len')[-1].replace('_ik.mp4', ''))
     for n in range(repeat_times):
         data_unit = {
-            "url": f"./generation/{uid}/animations/0/sample0_repeat{n}_len196_ik.mp4"
+            "url": f"./generation/{uid}/animations/0/sample0_repeat{n}_len{motion_length}_ik.mp4"
             }
         datas.append(data_unit)
+    print(datas)
     return datas
 
 
