@@ -6,6 +6,8 @@ import numpy as np
 import gradio as gr
 import gdown
 
+print(f"Is CUDA available: {torch.cuda.is_available()}")
+print(f"CUDA device: {torch.cuda.get_device_name(torch.cuda.current_device())}")
 
 WEBSITE = """
 <div class="embed_hidden">
