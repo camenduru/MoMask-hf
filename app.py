@@ -85,7 +85,7 @@ def generate(
 ):
     os.system(f'python gen_t2m.py --gpu_id 0 --seed {seed} --ext {uid} --repeat_times {repeat_times} --motion_length {motion_length} --text_prompt {text}')
     datas = []
-    for n in repeat_times:
+    for n in range(repeat_times):
         data_unit = {
             "url": f"./generation/{uid}/animations/0/sample0_repeat{n}_len196_ik.mp4"
             }
