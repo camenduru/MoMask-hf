@@ -83,7 +83,7 @@ DEFAULT_TEXT = "A person is "
 def generate(
     text, uid, motion_length=0, seed=351540, repeat_times=4,
 ):
-    os.system(f'python gen_t2m.py --gpu_id 0 --seed {seed} --ext {uid} --repeat_times {repeat_times} --motion_length {motion_length} --text_prompt {text}')
+    os.system(f'python gen_t2m.py --gpu_id 0 --seed {seed} --ext {uid} --repeat_times {repeat_times} --motion_length {motion_length} --text_prompt "{text}"')
     datas = []
     for n in range(repeat_times):
         data_unit = {
