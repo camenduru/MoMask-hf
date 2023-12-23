@@ -33,6 +33,9 @@ WEBSITE = """
 <p>
 🔥🔥🔥This space presents an interactive demo for <a href='https://ericguo5513.github.io/momask/' target='_blank'><b>MoMask</b></a>, a method for text-to-motion generation. Motion editing, uploading and .bvh downloading are coming soon!!! 🚀🚀
 </p>
+<p>
+😁😁If you find this demo interesting, we would appreciate your star on our github.🫶🫶
+</p>
 </div>
 """
 WEBSITE_bottom = """
