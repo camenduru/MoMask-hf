@@ -43,24 +43,24 @@ We thanks <a href="https://huggingface.co/spaces/Mathux/TMR" target="_blank">TMR
 """
 
 EXAMPLES = [
-    "A person is walking slowly",
-    "A person is walking in a circle",
-    "A person is jumping rope",
-    "Someone is doing a backflip",
-    "A person is doing a moonwalk",
-    "A person walks forward and then turns back",
-    "Picking up an object",
-    "A person is swimming in the sea",
-    "A human is squatting",
-    "Someone is jumping with one foot",
-    "A person is chopping vegetables",
-    "Someone walks backward",
-    "Somebody is ascending a staircase",
-    "A person is sitting down",
-    "A person is taking the stairs",
-    "Someone is doing jumping jacks",
-    "The person walked forward and is picking up his toolbox",
-    "The person angrily punching the air",
+   "This person kicks with his right leg then jabs several times.",
+   "A person stands for few seconds and picks up his arms and shakes them.",
+   "A person stands, crosses left leg in front of the right, lowering themselves until they are sitting, both hands on the floor before standing and uncrossing legs.",
+   "A person is running on a treadmill.",
+   "A person walks with a limp, their left leg gets injured.",
+   "A person repeatedly blocks their face with their right arm.",
+   "The person holds his left foot with his left hand, puts his right foot up and left hand up too.",
+   "A person walks in a clokwise circle and stops where he began.",
+   "A man bends down and picks something up with his right hand.",
+   "The man walked forward, spun right on one foot and walked back to his original position.",
+   "A man is walking forward then steps over an object then continues walking forward.",
+   "This person takes 4 steps forward staring with his right foot.",
+   "The person did a kick spin to the left.",
+   "A figure streches it hands and arms above its head.",
+   "The person takes 4 steps backwards.",
+   "A person jumps up and then lands.",
+   "The person was pushed but did not fall.",
+   "The person does a salsa dance."
 ]
 
 # Show closest text in the training
