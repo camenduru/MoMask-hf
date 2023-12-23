@@ -63,7 +63,7 @@ EXAMPLES = [
 # css to make videos look nice
 # var(--block-border-color); TODO
 CSS = """
-.retrieved_video {
+.generate_video {
     position: relative;
     margin: 0;
     box-shadow: var(--block-shadow);
@@ -89,10 +89,10 @@ def generate(
     motion_length = int(file_name.split('len')[-1].replace('_ik.mp4', ''))
     for n in range(repeat_times):
         data_unit = {
-            "url": f"./generation/{uid}/animations/0/sample0_repeat{n}_len{motion_length}_ik.mp4"
+            "url": f"generation/{uid}/animations/0/sample0_repeat{n}_len{motion_length}_ik.mp4"
             }
         datas.append(data_unit)
-    print(datas)
+        print(datas)
     return datas
 
 
@@ -103,9 +103,9 @@ def get_video_html(data, video_id, width=700, height=700):
     # <div class="contour_video" style="position: absolute; padding: 10px;">
     # width="{width}" height="{height}"
     video_html = f"""
-<video class="retrieved_video" width="{width}" height="{height}" preload="auto" muted playsinline onpause="this.load()"
+<video class="generate_video" width="{width}" height="{height}" preload="auto" muted playsinline onpause="this.load()"
 autoplay loop disablepictureinpicture id="{video_id}">
-  <source src="{url}" type="video/mp4">
+  <source src="file/{url}" type="video/mp4">
   Your browser does not support the video tag.
 </video>
 """
