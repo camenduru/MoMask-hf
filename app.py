@@ -4,8 +4,8 @@ import os
 import torch
 import numpy as np
 import gradio as gr
-import gdown
 import random
+import shutil
 
 print(f"Is CUDA available: {torch.cuda.is_available()}")
 print(f"CUDA device: {torch.cuda.get_device_name(torch.cuda.current_device())}")
@@ -31,7 +31,13 @@ WEBSITE = """
 </h3>
 <h3> Description </h3>
 <p>
-This space illustrates <a href='https://ericguo5513.github.io/momask/' target='_blank'><b>MoMask</b></a>, a method for text-to-motion generation.
+🔥🔥🔥This space presents an interactive demo for <a href='https://ericguo5513.github.io/momask/' target='_blank'><b>MoMask</b></a>, a method for text-to-motion generation. Motion editing, uploading and .bvh downloading are coming soon!!! 🚀🚀
+</p>
+</div>
+"""
+WEBSITE_bottom = """
+<p>
+We thanks <a href="https://huggingface.co/spaces/Mathux/TMR" target="_blank">TMR</a> for this cool space template.
 </p>
 </div>
 """
@@ -92,7 +98,7 @@ def generate(
             "url": f"generation/{uid}/animations/0/sample0_repeat{n}_len{motion_length}_ik.mp4"
             }
         datas.append(data_unit)
-        print(datas)
+    print(datas)
     return datas
 
 
@@ -172,7 +178,7 @@ with gr.Blocks(css=CSS, theme=theme) as demo:
                 i += 1
                 video = gr.HTML()
                 videos.append(video)
-
+    gr.Markdown(WEBSITE_bottom)
     # connect the examples to the output
     # a bit hacky
     examples.outputs = videos
@@ -202,6 +208,7 @@ with gr.Blocks(css=CSS, theme=theme) as demo:
     )
 
     def clear_videos():
+        shutil.rmtree('./generation')
         return [None for x in range(4)] + [DEFAULT_TEXT]
 
     clear.click(fn=clear_videos, outputs=videos + [text])
