@@ -5,6 +5,7 @@ import torch
 import numpy as np
 import gradio as gr
 import gdown
+import random
 
 print(f"Is CUDA available: {torch.cuda.is_available()}")
 print(f"CUDA device: {torch.cuda.get_device_name(torch.cuda.current_device())}")
@@ -111,8 +112,8 @@ autoplay loop disablepictureinpicture id="{video_id}">
 def generate_component(generate_function, text):
     if text == DEFAULT_TEXT or text == "" or text is None:
         return [None for _ in range(4)]
-
-    datas = generate_function(text, )
+    uid = random.randrange(99999)
+    datas = generate_function(text, uid)
     htmls = [get_video_html(data, idx) for idx, data in enumerate(datas)]
     return htmls
 
