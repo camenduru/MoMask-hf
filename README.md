@@ -1,7 +1,7 @@
 ---
 title: MoMask
-emoji: 🐨
-colorFrom: yellow
+emoji: 🎭
+colorFrom: pink
 colorTo: purple
 sdk: gradio
 sdk_version: 3.24.1
