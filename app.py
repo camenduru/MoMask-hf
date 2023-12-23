@@ -116,7 +116,7 @@ def generate_component(generate_function, text):
 
 
 if not os.path.exists("checkpoints/t2m"):
-    os.system("bash prepare/download_models.sh")
+    os.system("bash prepare/download_models_demo.sh")
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
