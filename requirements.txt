@@ -29,10 +29,10 @@ scikit-learn
 scipy 
 smplx==0.1.28
 sniffio==1.3.0
-torch==1.7.1
-torch-tb-profiler==0.4.1
-torchaudio==0.7.0a0+a853dff
-torchvision==0.8.2
+torch==1.12.0
+torch-tb-profiler
+torchaudio
+torchvision
 tornado
 tqdm
 trimesh
