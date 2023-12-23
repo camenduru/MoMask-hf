@@ -1,3 +1,14 @@
+---
+title: MoMask
+emoji: 🐨
+colorFrom: yellow
+colorTo: purple
+sdk: gradio
+sdk_version: 3.24.1
+app_file: app.py
+pinned: false
+---
+
 # MoMask: Generative Masked Modeling of 3D Human Motions
 ## [[Project Page]](https://ericguo5513.github.io/momask) [[Paper]](https://arxiv.org/abs/2312.00063)
 ![teaser_image](https://ericguo5513.github.io/momask/static/images/teaser.png)
