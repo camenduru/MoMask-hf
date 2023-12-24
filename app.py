@@ -90,7 +90,7 @@ CSS = """
 DEFAULT_TEXT = "A person is "
 
 def generate(
-    text, uid, motion_length=0, seed=10107, repeat_times=4,
+    text, uid, motion_length=0, seed=10107, repeat_times=1,
 ):
     os.system(f'python gen_t2m.py --gpu_id 0 --seed {seed} --ext {uid} --repeat_times {repeat_times} --motion_length {motion_length} --text_prompt "{text}"')
     datas = []
@@ -123,7 +123,7 @@ autoplay loop disablepictureinpicture id="{video_id}">
 
 def generate_component(generate_function, text):
     if text == DEFAULT_TEXT or text == "" or text is None:
-        return [None for _ in range(4)]
+        return [None for _ in range(1)]
     uid = random.randrange(99999)
     datas = generate_function(text, uid)
     htmls = [get_video_html(data, idx) for idx, data in enumerate(datas)]
@@ -177,7 +177,7 @@ with gr.Blocks(css=CSS, theme=theme) as demo:
     # should indent
     for _ in range(1):
         with gr.Row():
-            for _ in range(4):
+            for _ in range(1):
                 i += 1
                 video = gr.HTML()
                 videos.append(video)
@@ -211,7 +211,7 @@ with gr.Blocks(css=CSS, theme=theme) as demo:
     )
 
     def clear_videos():
-        return [None for x in range(4)] + [DEFAULT_TEXT]
+        return [None for x in range(1)] + [DEFAULT_TEXT]
 
     clear.click(fn=clear_videos, outputs=videos + [text])
 
