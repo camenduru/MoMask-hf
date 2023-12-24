@@ -211,7 +211,6 @@ with gr.Blocks(css=CSS, theme=theme) as demo:
     )
 
     def clear_videos():
-        shutil.rmtree('./generation')
         return [None for x in range(4)] + [DEFAULT_TEXT]
 
     clear.click(fn=clear_videos, outputs=videos + [text])
