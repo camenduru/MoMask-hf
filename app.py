@@ -243,12 +243,14 @@ def get_video_html(data, video_id, width=700, height=700):
     # <div class="contour_video" style="position: absolute; padding: 10px;">
     # width="{width}" height="{height}"
     video_html = f"""
+<h2 style='text-align: center'>
+<a href="file/{pjoin(animation_path, "sample_repeat0.bvh")}" download="sample.bvh"><b>BVH Download</b></a>
+</h2>
 <video class="generate_video" width="{width}" height="{height}" style="center" preload="auto" muted playsinline onpause="this.load()"
 autoplay loop disablepictureinpicture id="{video_id}">
   <source src="file/{url}" type="video/mp4">
   Your browser does not support the video tag.
 </video>
-<a href="file/{pjoin(animation_path, "sample_repeat0.bvh")}" download="sample.bvh"><b>BVH Download</b></a>
 """
     return video_html
 
