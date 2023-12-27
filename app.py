@@ -10,6 +10,30 @@ import shutil
 print(f"Is CUDA available: {torch.cuda.is_available()}")
 print(f"CUDA device: {torch.cuda.get_device_name(torch.cuda.current_device())}")
 
+import os
+from os.path import join as pjoin
+
+import torch.nn.functional as F
+
+from models.mask_transformer.transformer import MaskTransformer, ResidualTransformer
+from models.vq.model import RVQVAE, LengthEstimator
+
+from options.hgdemo_option import EvalT2MOptions
+from utils.get_opt import get_opt
+
+from utils.fixseed import fixseed
+from visualization.joints2bvh import Joint2BVHConvertor
+from torch.distributions.categorical import Categorical
+
+from utils.motion_process import recover_from_ric
+from utils.plot_script import plot_3d_motion
+
+from utils.paramUtil import t2m_kinematic_chain
+
+from gen_t2m import load_vq_model, load_res_model, load_trans_model, load_len_estimator
+
+clip_version = 'ViT-B/32'
+
 WEBSITE = """
 <div class="embed_hidden">
 <h1 style='text-align: center'> MoMask: Generative Masked Modeling of 3D Human Motions </h1>
@@ -89,19 +113,120 @@ CSS = """
 
 DEFAULT_TEXT = "A person is "
 
+
+##########################
+######Preparing demo######
+##########################
+parser = EvalT2MOptions()
+opt = parser.parse()
+fixseed(opt.seed)
+opt.device = torch.device("cpu" if opt.gpu_id == -1 else "cuda:" + str(opt.gpu_id))
+dim_pose = 263
+root_dir = pjoin(opt.checkpoints_dir, opt.dataset_name, opt.name)
+model_dir = pjoin(root_dir, 'model')
+model_opt_path = pjoin(root_dir, 'opt.txt')
+model_opt = get_opt(model_opt_path, device=opt.device)
+
+######Loading RVQ######
+vq_opt_path = pjoin(opt.checkpoints_dir, opt.dataset_name, model_opt.vq_name, 'opt.txt')
+vq_opt = get_opt(vq_opt_path, device=opt.device)
+vq_opt.dim_pose = dim_pose
+vq_model, vq_opt = load_vq_model(vq_opt)
+
+model_opt.num_tokens = vq_opt.nb_code
+model_opt.num_quantizers = vq_opt.num_quantizers
+model_opt.code_dim = vq_opt.code_dim
+
+######Loading R-Transformer######
+res_opt_path = pjoin(opt.checkpoints_dir, opt.dataset_name, opt.res_name, 'opt.txt')
+res_opt = get_opt(res_opt_path, device=opt.device)
+res_model = load_res_model(res_opt, vq_opt, opt)
+
+assert res_opt.vq_name == model_opt.vq_name
+
+######Loading M-Transformer######
+t2m_transformer = load_trans_model(model_opt, opt, 'latest.tar')
+
+#####Loading Length Predictor#####
+length_estimator = load_len_estimator(model_opt)
+
+t2m_transformer.eval()
+vq_model.eval()
+res_model.eval()
+length_estimator.eval()
+
+res_model.to(opt.device)
+t2m_transformer.to(opt.device)
+vq_model.to(opt.device)
+length_estimator.to(opt.device)
+
+opt.nb_joints = 22
+mean = np.load(pjoin(opt.checkpoints_dir, opt.dataset_name, model_opt.vq_name, 'meta', 'mean.npy'))
+std = np.load(pjoin(opt.checkpoints_dir, opt.dataset_name, model_opt.vq_name, 'meta', 'std.npy'))
+def inv_transform(data):
+    return data * std + mean
+
+kinematic_chain = t2m_kinematic_chain
+converter = Joint2BVHConvertor()
+cached_dir = './cached'
+os.makedirs(cached_dir, exist_ok=True)
+
+@torch.no_grad()
 def generate(
-    text, uid, motion_length=0, seed=10107, repeat_times=1,
+    text, uid, motion_length=0, use_ik=True, seed=10107, repeat_times=1,
 ):
-    os.system(f'python gen_t2m.py --gpu_id 0 --seed {seed} --ext {uid} --repeat_times {repeat_times} --motion_length {motion_length} --text_prompt "{text}"')
+    fixseed(seed)
+    prompt_list = []
+    length_list = []
+    est_length = False
+    prompt_list.append(text)
+    if motion_length == 0:
+        est_length = True
+    else:
+        length_list.append(motion_length)
+
+    if est_length:
+        print("Since no motion length are specified, we will use estimated motion lengthes!!")
+        text_embedding = t2m_transformer.encode_text(prompt_list)
+        pred_dis = length_estimator(text_embedding)
+        probs = F.softmax(pred_dis, dim=-1)  # (b, ntoken)
+        token_lens = Categorical(probs).sample()  # (b, seqlen)
+    else:
+        token_lens = torch.LongTensor(length_list) // 4
+        token_lens = token_lens.to(opt.device).long()
+
+    m_length = token_lens * 4
+    captions = prompt_list
     datas = []
-    file_name = [name for name in os.listdir(f"./generation/{uid}/animations/0/") if name.endswith('_ik.mp4')][0]
-    motion_length = int(file_name.split('len')[-1].replace('_ik.mp4', ''))
-    for n in range(repeat_times):
+    for r in range(repeat_times):
+        mids = t2m_transformer.generate(captions, token_lens,
+                                        timesteps=opt.time_steps,
+                                        cond_scale=opt.cond_scale,
+                                        temperature=opt.temperature,
+                                        topk_filter_thres=opt.topkr,
+                                        gsample=opt.gumbel_sample)
+        mids = res_model.generate(mids, captions, token_lens, temperature=1, cond_scale=5)
+        pred_motions = vq_model.forward_decoder(mids)
+        pred_motions = pred_motions.detach().cpu().numpy()
+        data = inv_transform(pred_motions)
+        for k, (caption, joint_data)  in enumerate(zip(captions, data)):
+            animation_path = pjoin(cached_dir, uid, str(k))
+            os.makedirs(animation_path, exist_ok=True)
+            joint_data = joint_data[:m_length[k]]
+            joint = recover_from_ric(torch.from_numpy(joint_data).float(), 22).numpy()
+            bvh_path = pjoin(animation_path, "sample%d_repeat%d_len%d.bvh" % (k, r, m_length[k]))
+            save_path = pjoin(animation_path, "sample%d_repeat%d_len%d.mp4"%(k, r, m_length[k]))
+            if use_ik:
+                _, joint = converter.convert(joint, filename=bvh_path, iterations=100)
+            else:
+                _, joint = converter.convert(joint, filename=bvh_path, iterations=100, foot_ik=False)
+            plot_3d_motion(save_path, kinematic_chain, joint, title=caption, fps=20)
+            np.save(pjoin(animation_path, "sample%d_repeat%d_len%d.npy"%(k, r, m_length[k])), joint)
         data_unit = {
-            "url": f"generation/{uid}/animations/0/sample0_repeat{n}_len{motion_length}_ik.mp4"
+            "url": f"generation/{uid}/animations/0/sample0_repeat{r}_len{motion_length}.mp4"
             }
         datas.append(data_unit)
-    print(datas)
+
     return datas
 
 
@@ -121,11 +246,16 @@ autoplay loop disablepictureinpicture id="{video_id}">
     return video_html
 
 
-def generate_component(generate_function, text):
+def generate_component(generate_function, text, motion_len='0', postprocess='IK'):
     if text == DEFAULT_TEXT or text == "" or text is None:
         return [None for _ in range(1)]
     uid = random.randrange(99999)
-    datas = generate_function(text, uid)
+    try:
+        motion_len = max(0, min(int(float(motion_len) * 20), 196))
+    except:
+        motion_len = 0
+    use_ik = postprocess == 'IK'
+    datas = generate_function(text, uid, motion_len, use_ik)
     htmls = [get_video_html(data, idx) for idx, data in enumerate(datas)]
     return htmls
 
@@ -148,15 +278,27 @@ with gr.Blocks(css=CSS, theme=theme) as demo:
 
     with gr.Row():
         with gr.Column(scale=3):
-            with gr.Column(scale=2):
-                text = gr.Textbox(
-                    show_label=True,
-                    label="Text prompt",
-                    value=DEFAULT_TEXT,
-                )
-            with gr.Column(scale=1):
-                gen_btn = gr.Button("Generate", variant="primary")
-                clear = gr.Button("Clear", variant="secondary")
+            text = gr.Textbox(
+                show_label=True,
+                label="Text prompt",
+                value=DEFAULT_TEXT,
+            )
+            with gr.Row():
+                with gr.Column(scale=1):
+                    motion_len = gr.Textbox(
+                        show_label=True,
+                        label="Motion length (<10s)",
+                        value=0,
+                    )
+                with gr.Column(scale=1):
+                    use_ik = gr.Radio(
+                        ["Raw", "IK"],
+                        label="Post-processing",
+                        value="IK",
+                        info="Use basic inverse kinematic (IK) for foot contact locking",
+                    )
+            gen_btn = gr.Button("Generate", variant="primary")
+            clear = gr.Button("Clear", variant="secondary")
 
         with gr.Column(scale=2):
 
@@ -166,7 +308,7 @@ with gr.Blocks(css=CSS, theme=theme) as demo:
             examples = gr.Examples(
                 examples=[[x, None, None] for x in EXAMPLES],
                 inputs=[text],
-                examples_per_page=20,
+                examples_per_page=10,
                 run_on_click=False,
                 cache_examples=False,
                 fn=generate_example,
@@ -201,12 +343,12 @@ with gr.Blocks(css=CSS, theme=theme) as demo:
 
     gen_btn.click(
         fn=generate_and_show,
-        inputs=[text],
+        inputs=[text, motion_len, use_ik],
         outputs=videos,
     )
     text.submit(
         fn=generate_and_show,
-        inputs=[text],
+        inputs=[text, motion_len, use_ik],
         outputs=videos,
     )
 

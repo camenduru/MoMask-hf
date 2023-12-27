@@ -12,7 +12,7 @@ class BaseOptions():
 
         self.parser.add_argument('--vq_name', type=str, default="rvq_nq1_dc512_nc512", help='Name of the rvq model.')
 
-        self.parser.add_argument("--gpu_id", type=int, default=-1, help='GPU id')
+        self.parser.add_argument("--gpu_id", type=int, default=0, help='GPU id')
         self.parser.add_argument('--dataset_name', type=str, default='t2m', help='Dataset Name, {t2m} for humanml3d, {kit} for kit-ml')
         self.parser.add_argument('--checkpoints_dir', type=str, default='./checkpoints', help='models are saved here.')
 
