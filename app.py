@@ -282,7 +282,7 @@ with gr.Blocks(css=CSS, theme=theme) as demo:
     videos = []
 
     with gr.Row():
-        with gr.Column(scale=2):
+        with gr.Column(scale=3):
             text = gr.Textbox(
                 show_label=True,
                 label="Text prompt",
