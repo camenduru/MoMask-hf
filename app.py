@@ -297,6 +297,7 @@ with gr.Blocks(css=CSS, theme=theme) as demo:
                         show_label=True,
                         label="Motion length (<10s)",
                         value=0,
+                        info="Specify the motion length; 0 to use the default auto-setting.",
                     )
                 with gr.Column(scale=1):
                     use_ik = gr.Radio(
