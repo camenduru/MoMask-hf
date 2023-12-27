@@ -225,6 +225,7 @@ def generate(
             bvh_path = pjoin(animation_path, "sample_repeat%d.bvh" % (r))
             save_path = pjoin(animation_path, "sample_repeat%d_%d.mp4"%(r, ruid))
             if use_ik:
+                print("Using IK")
                 _, joint = converter.convert(joint, filename=bvh_path, iterations=100)
             else:
                 _, joint = converter.convert(joint, filename=bvh_path, iterations=100, foot_ik=False)
