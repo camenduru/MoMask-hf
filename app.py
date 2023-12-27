@@ -181,7 +181,7 @@ os.makedirs(animation_path, exist_ok=True)
 def generate(
     text, uid, motion_length=0, use_ik=True, seed=10107, repeat_times=1,
 ):
-    fixseed(seed)
+    # fixseed(seed)
     prompt_list = []
     length_list = []
     est_length = False
