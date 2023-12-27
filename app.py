@@ -72,7 +72,7 @@ We thanks <a href="https://huggingface.co/spaces/Mathux/TMR" target="_blank">TMR
 EXAMPLES = [
    "A person is running on a treadmill.", "The person did a kick spin to the left.",
    "The person takes 4 steps backwards.", "A person jumps up and then lands.",
-   "The person was pushed but did not fall.", "The person does a salsa dance."
+   "The person was pushed but did not fall.", "The person does a salsa dance.",
    "This person kicks with his right leg then jabs several times.",
    "A person stands for few seconds and picks up his arms and shakes them.",
    "A person walks in a clockwise circle and stops where he began.",
