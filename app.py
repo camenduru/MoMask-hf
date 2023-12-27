@@ -215,6 +215,7 @@ def generate(
         pred_motions = vq_model.forward_decoder(mids)
         pred_motions = pred_motions.detach().cpu().numpy()
         data = inv_transform(pred_motions)
+        ruid = random.randrange(99999)
         for k, (caption, joint_data)  in enumerate(zip(captions, data)):
             animation_path = pjoin(cached_dir, f'{uid}')
             shutil.rmtree(animation_path)
@@ -222,7 +223,7 @@ def generate(
             joint_data = joint_data[:m_length[k]]
             joint = recover_from_ric(torch.from_numpy(joint_data).float(), 22).numpy()
             bvh_path = pjoin(animation_path, "sample_repeat%d.bvh" % (r))
-            save_path = pjoin(animation_path, "sample_repeat%d.mp4"%(r))
+            save_path = pjoin(animation_path, "sample_repeat%d_%d.mp4"%(r, ruid))
             if use_ik:
                 _, joint = converter.convert(joint, filename=bvh_path, iterations=100)
             else:
@@ -230,7 +231,7 @@ def generate(
             plot_3d_motion(save_path, kinematic_chain, joint, title=caption, fps=20)
             np.save(pjoin(animation_path, "sample_repeat%d.npy"%(r)), joint)
         data_unit = {
-            "url": pjoin(animation_path, "sample_repeat%d.mp4"%(r))
+            "url": pjoin(animation_path, "sample_repeat%d_%d.mp4"%(r, ruid))
             }
         datas.append(data_unit)
 
