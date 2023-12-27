@@ -226,7 +226,7 @@ def generate(
             plot_3d_motion(save_path, kinematic_chain, joint, title=caption, fps=20)
             np.save(pjoin(animation_path, "sample%d_repeat%d_len%d.npy"%(k, r, m_length[k])), joint)
         data_unit = {
-            "url": f"generation/{uid}/animations/0/sample0_repeat{r}_len{motion_length}.mp4"
+            "url": pjoin(animation_path, "sample%d_repeat%d_len%d.mp4"%(0, r, m_length[0]))
             }
         datas.append(data_unit)
 
