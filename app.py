@@ -76,21 +76,19 @@ We thanks <a href="https://huggingface.co/spaces/Mathux/TMR" target="_blank">TMR
 """
 
 EXAMPLES = [
-   "A person is running on a treadmill.", "The person did a kick spin to the left.",
-   "The person takes 4 steps backwards.", "A person jumps up and then lands.",
-   "The person was pushed but did not fall.", "The person does a salsa dance.",
+   "A person is running on a treadmill.", "The person takes 4 steps backwards.", 
+   "A person jumps up and then lands.", "The person was pushed but did not fall.", 
+   "The person does a salsa dance.", "A figure streches it hands and arms above its head.",
    "This person kicks with his right leg then jabs several times.",
    "A person stands for few seconds and picks up his arms and shakes them.",
    "A person walks in a clockwise circle and stops where he began.",
    "A man bends down and picks something up with his right hand.",
    "A person walks with a limp, their left leg gets injured.",
    "A person repeatedly blocks their face with their right arm.",
-   "A figure streches it hands and arms above its head.",
    "The person holds his left foot with his left hand, puts his right foot up and left hand up too.",
    "A person stands, crosses left leg in front of the right, lowering themselves until they are sitting, both hands on the floor before standing and uncrossing legs.",
    "The man walked forward, spun right on one foot and walked back to his original position.",
    "A man is walking forward then steps over an object then continues walking forward.",
-   "This person takes 4 steps forward staring with his right foot.",
 ]
 
 # Show closest text in the training
