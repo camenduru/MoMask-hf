@@ -98,7 +98,8 @@ EXAMPLES = [
 CSS = """
 .generate_video {
     position: relative;
-    margin: 0;
+    margin-left: auto;
+    margin-right: auto;
     box-shadow: var(--block-shadow);
     border-width: var(--block-border-width);
     border-color: #000000;
@@ -242,11 +243,12 @@ def get_video_html(data, video_id, width=700, height=700):
     # <div class="contour_video" style="position: absolute; padding: 10px;">
     # width="{width}" height="{height}"
     video_html = f"""
-<video class="generate_video" width="{width}" height="{height}" preload="auto" muted playsinline onpause="this.load()"
+<video class="generate_video" width="{width}" height="{height}" style="center" preload="auto" muted playsinline onpause="this.load()"
 autoplay loop disablepictureinpicture id="{video_id}">
   <source src="file/{url}" type="video/mp4">
   Your browser does not support the video tag.
 </video>
+<a href="file/{pjoin(animation_path, "sample_repeat0.bvh")}" download="sample.bvh"><b>BVH Download</b></a>
 """
     return video_html
 
@@ -295,14 +297,13 @@ with gr.Blocks(css=CSS, theme=theme) as demo:
                         value="IK",
                         info="Use basic inverse kinematic (IK) for foot contact locking",
                     )
-                with gr.Column(scale=1): 
-                    gr.Markdown(
-                        f"""
-                            <a href="{pjoin(animation_path, "sample_repeat0.bvh")}" download="sample.bvh"><b>click to download</b></a>
-                        """
-                    )
             gen_btn = gr.Button("Generate", variant="primary")
             clear = gr.Button("Clear", variant="secondary")
+            gr.Markdown(
+                        f"""
+                            
+                        """
+                    )
 
         with gr.Column(scale=2):
 
