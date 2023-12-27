@@ -55,10 +55,13 @@ WEBSITE = """
 </h3>
 <h3> Description </h3>
 <p>
-🔥🔥🔥This space presents an interactive demo for <a href='https://ericguo5513.github.io/momask/' target='_blank'><b>MoMask</b></a>, a method for text-to-motion generation. Motion editing, uploading and .bvh downloading are coming soon!!! 🚀🚀
+🔥🔥🔥 This space presents an interactive demo for <a href='https://ericguo5513.github.io/momask/' target='_blank'><b>MoMask</b></a>, a method for text-to-motion generation. It generates human motions (skeletal animations) based on your descriptions. To gain a better understanding of our work, you could try the provided examples first. In addition, we provide a link to download the generated human skeletal motion in BVH file format, compatible with CG software such as Blender.!!! 🚀🚀🚀
 </p>
 <p>
-😁😁If you find this demo interesting, we would appreciate your star on our github.🫶🫶
+😁😁😁 If you find this demo interesting, we would appreciate your star on our <a href="https://github.com/EricGuo5513/momask-codes" target="_blank">github</a>. More details could be found on our <a href='https://ericguo5513.github.io/momask/' target='_blank'>webpage</a>. 🫶🫶🫶
+</p>
+<p>
+If you have any issues on this space or feature requests, we warmly welcome you to contact us through our <a href="https://github.com/EricGuo5513/momask-codes/issues" target="_blank">github repo</a> or <a href="mailto:ymu3@ualberta.ca?subject =[MoMask]Feedback">email</a>.
 </p>
 </div>
 """
