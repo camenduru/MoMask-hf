@@ -116,7 +116,7 @@ DEFAULT_TEXT = "A person is "
 
 if not os.path.exists("checkpoints/t2m"):
     os.system("bash prepare/download_models_demo.sh")
-    
+
 ##########################
 ######Preparing demo######
 ##########################
@@ -213,7 +213,7 @@ def generate(
         pred_motions = pred_motions.detach().cpu().numpy()
         data = inv_transform(pred_motions)
         for k, (caption, joint_data)  in enumerate(zip(captions, data)):
-            animation_path = pjoin(cached_dir, uid, str(k))
+            animation_path = pjoin(cached_dir, f'{uid}', str(k))
             os.makedirs(animation_path, exist_ok=True)
             joint_data = joint_data[:m_length[k]]
             joint = recover_from_ric(torch.from_numpy(joint_data).float(), 22).numpy()
