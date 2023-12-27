@@ -104,7 +104,7 @@ CSS = """
     border-color: #000000;
     border-radius: var(--block-radius);
     background: var(--block-background-fill);
-    width: 100%;
+    width: 25%;
     line-height: var(--line-sm);
 }
 }
@@ -172,7 +172,9 @@ def inv_transform(data):
 kinematic_chain = t2m_kinematic_chain
 converter = Joint2BVHConvertor()
 cached_dir = './cached'
-os.makedirs(cached_dir, exist_ok=True)
+uid = 12138
+animation_path = pjoin(cached_dir, f'{uid}')
+os.makedirs(animation_path, exist_ok=True)
 
 @torch.no_grad()
 def generate(
@@ -213,20 +215,20 @@ def generate(
         pred_motions = pred_motions.detach().cpu().numpy()
         data = inv_transform(pred_motions)
         for k, (caption, joint_data)  in enumerate(zip(captions, data)):
-            animation_path = pjoin(cached_dir, f'{uid}', str(k))
+            animation_path = pjoin(cached_dir, f'{uid}')
             os.makedirs(animation_path, exist_ok=True)
             joint_data = joint_data[:m_length[k]]
             joint = recover_from_ric(torch.from_numpy(joint_data).float(), 22).numpy()
-            bvh_path = pjoin(animation_path, "sample%d_repeat%d_len%d.bvh" % (k, r, m_length[k]))
-            save_path = pjoin(animation_path, "sample%d_repeat%d_len%d.mp4"%(k, r, m_length[k]))
+            bvh_path = pjoin(animation_path, "sample_repeat%d.bvh" % (r))
+            save_path = pjoin(animation_path, "sample_repeat%d.mp4"%(r))
             if use_ik:
                 _, joint = converter.convert(joint, filename=bvh_path, iterations=100)
             else:
                 _, joint = converter.convert(joint, filename=bvh_path, iterations=100, foot_ik=False)
             plot_3d_motion(save_path, kinematic_chain, joint, title=caption, fps=20)
-            np.save(pjoin(animation_path, "sample%d_repeat%d_len%d.npy"%(k, r, m_length[k])), joint)
+            np.save(pjoin(animation_path, "sample_repeat%d.npy"%(r)), joint)
         data_unit = {
-            "url": pjoin(animation_path, "sample%d_repeat%d_len%d.mp4"%(0, r, m_length[0]))
+            "url": pjoin(animation_path, "sample_repeat%d.mp4"%(r))
             }
         datas.append(data_unit)
 
@@ -248,11 +250,10 @@ autoplay loop disablepictureinpicture id="{video_id}">
 """
     return video_html
 
-
 def generate_component(generate_function, text, motion_len='0', postprocess='IK'):
     if text == DEFAULT_TEXT or text == "" or text is None:
         return [None for _ in range(1)]
-    uid = random.randrange(99999)
+    # uid = random.randrange(99999)
     try:
         motion_len = max(0, min(int(float(motion_len) * 20), 196))
     except:
@@ -293,6 +294,12 @@ with gr.Blocks(css=CSS, theme=theme) as demo:
                         label="Post-processing",
                         value="IK",
                         info="Use basic inverse kinematic (IK) for foot contact locking",
+                    )
+                with gr.Column(scale=1): 
+                    gr.Markdown(
+                        f"""
+                            <a href="{pjoin(animation_path, "sample_repeat0.bvh")}" download="sample.bvh"><b>click to download</b></a>
+                        """
                     )
             gen_btn = gr.Button("Generate", variant="primary")
             clear = gr.Button("Clear", variant="secondary")
