@@ -114,6 +114,9 @@ CSS = """
 DEFAULT_TEXT = "A person is "
 
 
+if not os.path.exists("checkpoints/t2m"):
+    os.system("bash prepare/download_models_demo.sh")
+    
 ##########################
 ######Preparing demo######
 ##########################
@@ -259,12 +262,6 @@ def generate_component(generate_function, text, motion_len='0', postprocess='IK'
     htmls = [get_video_html(data, idx) for idx, data in enumerate(datas)]
     return htmls
 
-
-if not os.path.exists("checkpoints/t2m"):
-    os.system("bash prepare/download_models_demo.sh")
-
-
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # LOADING
 
