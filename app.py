@@ -259,10 +259,10 @@ def generate_component(generate_function, text, motion_len='0', postprocess='IK'
         return [None for _ in range(1)]
     # uid = random.randrange(99999)
     motion_len = max(0, min(int(float(motion_len) * 20), 196))
-    try:
-        motion_len = max(0, min(int(float(motion_len) * 20), 196))
-    except:
-        motion_len = 0
+    # try:
+    #     motion_len = max(0, min(int(float(motion_len) * 20), 196))
+    # except:
+    #     motion_len = 0
     use_ik = postprocess == 'IK'
     datas = generate_function(text, uid, motion_len, use_ik)
     htmls = [get_video_html(data, idx) for idx, data in enumerate(datas)]
