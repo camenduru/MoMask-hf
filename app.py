@@ -183,6 +183,7 @@ def generate(
     text, uid, motion_length=0, use_ik=True, seed=10107, repeat_times=1,
 ):
     # fixseed(seed)
+    print(text)
     prompt_list = []
     length_list = []
     est_length = False
@@ -219,7 +220,6 @@ def generate(
         ruid = random.randrange(99999)
         for k, (caption, joint_data)  in enumerate(zip(captions, data)):
             animation_path = pjoin(cached_dir, f'{uid}')
-            shutil.rmtree(animation_path)
             os.makedirs(animation_path, exist_ok=True)
             joint_data = joint_data[:m_length[k]]
             joint = recover_from_ric(torch.from_numpy(joint_data).float(), 22).numpy()
