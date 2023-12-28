@@ -219,7 +219,6 @@ def generate(
         ruid = random.randrange(99999)
         for k, (caption, joint_data)  in enumerate(zip(captions, data)):
             animation_path = pjoin(cached_dir, f'{uid}')
-            shutil.rmtree(animation_path)
             os.makedirs(animation_path, exist_ok=True)
             joint_data = joint_data[:m_length[k]]
             joint = recover_from_ric(torch.from_numpy(joint_data).float(), 22).numpy()
